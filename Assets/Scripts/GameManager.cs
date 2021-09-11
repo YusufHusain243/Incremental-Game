@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -32,10 +33,15 @@ public class GameManager : MonoBehaviour
     private List<TapText> _tapTextPool = new List<TapText>();
     private float _collectSecond;
 
+
+    public GameObject CoinTapArea;
+    public float minX, maxX, minY, maxY, minTime, maxTime;
+
     public double TotalGold { get; private set; }
     private void Start()
     {
         AddAllResources();
+        StartCoroutine(SpawnCoin());
     }
 
     private void Update()
@@ -51,6 +57,24 @@ public class GameManager : MonoBehaviour
         CoinIcon.transform.localScale = Vector3.LerpUnclamped(CoinIcon.transform.localScale, Vector3.one * 2f, 0.15f);
     }
 
+    IEnumerator SpawnCoin()
+    {
+        transform.position = new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
+        GameObject coinTapArea = Instantiate(CoinTapArea, transform.position, Quaternion.identity) as GameObject;
+
+        coinTapArea.transform.SetParent(GameObject.FindGameObjectWithTag("Canvas").transform, false);
+
+        yield return new WaitForSeconds(Random.Range(minTime, maxTime));
+        StartCoroutine(SpawnCoin());
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.tag == "Coin")
+        {
+            Destroy(GameObject.FindWithTag("Coin"));
+        }
+    }
     public void CollectByTap(Vector3 tapPosition, Transform parent)
     {
         double output = 0;
