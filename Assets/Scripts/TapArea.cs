@@ -6,9 +6,11 @@ public class TapArea : MonoBehaviour, IPointerDownHandler
     public float speed;
     public Rigidbody2D rb;
     public Vector3 startPosition;
+    public AudioSource audio;
     // Start is called before the first frame update
     void Start()
     {
+        audio = GetComponent<AudioSource>();
         startPosition = transform.position;
         Launch();
     }
@@ -22,6 +24,7 @@ public class TapArea : MonoBehaviour, IPointerDownHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        audio.Play();
         GameManager.Instance.CollectByTap(eventData.position, transform);
     }
 }
